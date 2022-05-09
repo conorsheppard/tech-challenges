@@ -1,0 +1,30 @@
+name: tech-challenges-build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: import passphrase & gpg key ... decrypt tests
+        run: |
+          echo -n -e ${{ secrets.GPG_PASSPHRASE }} > password.txt
+          echo $PRIVATE_KEY | base64 -d >> tech-challenges-gpgkey_sec.gpg
+          gpg --import --always-trust --pinentry-mode loopback --passphrase-file password.txt tech-challenges-gpgkey_sec.gpg
+          gpg --decrypt --pinentry-mode loopback --passphrase-file password.txt internal/reverse-string/reverse-string_test.go.asc > internal/reverse-string/reverse-string-decrypted_test.go
+        env:
+          PRIVATE_KEY : ${{ secrets.GPG_PRIVATE_KEY }}
+
+      - name: run tests
+        run: go test -v ./...
