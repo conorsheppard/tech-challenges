@@ -1,5 +1,7 @@
 ## Tech Challenge #001
 
+<img src="divido-tech-challenge-001.jpg" width="50%" alt="Divido Tech Challenge #001">
+
 ### Reverse String Challenge
 
 Write a function that will reverse an input string.<br/>
